@@ -4196,7 +4196,7 @@ process.genParticlesForJetsNoNu.ignoreParticleIDs += cms.vuint32( 12,14,16)
 
 process.ak4GenJetsNoNu = process.ak4GenJets.clone( src = cms.InputTag("genParticlesForJetsNoNu") )
 
-process.hltHbhereco.puCorrMethod = cms.int32(3)
+process.hltHbhereco.puCorrMethod = cms.int32(2)
 
 
 process.HLTL1UnpackerSequence = cms.Sequence( process.hltGtDigis + process.hltCaloStage1Digis + process.hltCaloStage1LegacyFormatDigis + process.hltL1GtObjectMap + process.hltL1extraParticles )
@@ -4258,9 +4258,9 @@ process.source = cms.Source( "PoolSource",
     fileNames = cms.untracked.vstring(
         #'file:RelVal_Raw_GRun_MC.root',
         #'file:/d3/scratch/swlee/works/JERC/Inputs/QCD/04655EEC-2FBD-E411-A281-0025905A6126.root',
-        'file:/d3/scratch/swlee/works/JERC/Inputs/single_pions/0004B0BE-8C88-E411-B3A0-0025905B85D6.root',
+        #'file:/d3/scratch/swlee/works/JERC/Inputs/single_pions/0004B0BE-8C88-E411-B3A0-0025905B85D6.root',
         #'/store/mc/Spring14dr/QCD_Pt-15to3000_Tune4C_Flat_13TeV_pythia8/GEN-SIM-RAW/Flat20to50_POSTLS170_V5-v1/00000/000209D1-A6DD-E311-9EE7-002590D0B000.root',
-#'/store/relval/CMSSW_7_4_0_pre8/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW-HLTDEBUG/MCRUN2_74_V7-v1/00000/04655EEC-2FBD-E411-A281-0025905A6126.root',
+        #'/store/relval/CMSSW_7_4_0_pre8/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW-HLTDEBUG/MCRUN2_74_V7-v1/00000/04655EEC-2FBD-E411-A281-0025905A6126.root',
     ),
     inputCommands = cms.untracked.vstring(
         'keep *'
@@ -4313,8 +4313,8 @@ if 'hltDQML1SeedLogicScalers' in process.__dict__:
 
 # limit the number of events to be processed
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32( 1000 )
-    #input = cms.untracked.int32( -1 )
+    #input = cms.untracked.int32( 1000 )
+    input = cms.untracked.int32( -1 )
 )
 
 # enable the TrigReport and TimeReport
