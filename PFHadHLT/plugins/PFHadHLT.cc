@@ -122,6 +122,7 @@ void
 PFHadHLT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    //using namespace edm;
+   Reset_variables();
 
    Handle<HltParticleFlow> hltpf;
    iEvent.getByLabel(hltpfcandTag, hltpf);
@@ -133,6 +134,7 @@ PFHadHLT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    if ( isSimu ) 
    { 
       nEv[0]++;
+   
       if ( (*trueParticles).size() != 1 ) return;
       nEv[1]++;
     
@@ -155,22 +157,29 @@ PFHadHLT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       { 
          reco::PFTrajectoryPoint::LayerType ecalEntrance = reco::PFTrajectoryPoint::ECALEntrance;
          const reco::PFTrajectoryPoint& tpatecal = ((*trueParticles)[0]).extrapolatedPoint( ecalEntrance );
+  
          eta_ = tpatecal.positionREP().Eta();
+  
          if ( fabs(eta_) < 1E-10 ) return; 
+
          phi_ = tpatecal.positionREP().Phi();
          true_ = std::sqrt(tpatecal.momentum().Vect().Mag2());
          p_ = 0.;
       
          ecal_ = 0.;
          hcal_ = 0.;
+  
          for( HltParticleFlow::const_iterator ithltPF = hltpf->begin(); ithltPF != hltpf->end(); ithltPF++ )  
          {
 	    const reco::PFCandidate& pfc = *ithltPF;
+
 	    double deta = eta_ - pfc.eta();
 	    double dphi = phi_ - pfc.phi();
 	    double dR = std::sqrt(deta*deta+dphi*dphi);
+
 	    if ( pfc.particleId() == 4 && dR < 0.04 ) ecal_ += pfc.rawEcalEnergy();
-	    if ( pfc.particleId() == 5 && dR < 0.2 ) hcal_ += pfc.rawHcalEnergy();
+	    if ( pfc.particleId() == 5 && dR < 0.2 )  hcal_ += pfc.rawHcalEnergy();
+
          } 
       
          s->Fill();
@@ -195,17 +204,21 @@ PFHadHLT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       double ecalRaw = pfc.rawEcalEnergy();
       double hcalRaw = pfc.rawHcalEnergy();
+
       if ( ecalRaw + hcalRaw < hcalMin_ ) continue;
       nCh[3]++;
 
       const PFCandidate::ElementsInBlocks& theElements = pfc.elementsInBlocks();
+
       if( theElements.empty() ) continue;
+
       const reco::PFBlockRef blockRef = theElements[0].first;
       PFBlock::LinkData linkData =  blockRef->linkData();
       const edm::OwnVector<reco::PFBlockElement>& elements = blockRef->elements();
 
       unsigned int nTracks = 0;
       unsigned iTrack = 999999;
+
       for(unsigned iEle=0; iEle<elements.size(); iEle++) 
       {
          PFBlockElement::Type type = elements[iEle].type();
@@ -219,6 +232,7 @@ PFHadHLT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	       continue;
          }
       }
+
       if ( nTracks != 1 ) continue;
       nCh[4]++;
 
@@ -267,11 +281,15 @@ PFHadHLT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       for ( unsigned int ieta=0; ieta<nEtaMin_.size(); ++ieta ) 
       { 
          if ( fabs(eta) < etaMin ) break;
+
          double etaMax = nEtaMin_[ieta];
          trackerHitOK = fabs(eta)>etaMin && fabs(eta)<etaMax && inner+outer>nHitMin_[ieta]; 
+
          if ( trackerHitOK ) break;
+
          etaMin = etaMax;
       }
+
       if ( !trackerHitOK ) continue;
       nCh[7]++;
 
